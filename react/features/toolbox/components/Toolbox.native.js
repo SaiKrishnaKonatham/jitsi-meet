@@ -23,6 +23,7 @@ import {
 } from '../../base/media';
 import { Container } from '../../base/react';
 import { ColorPalette } from '../../base/styles';
+import { enterPictureInPictureMode } from '../../mobile/picture-in-picture';
 import { beginRoomLockRequest } from '../../room-lock';
 import { beginShareRoom } from '../../share-room';
 
@@ -119,6 +120,7 @@ class Toolbox extends Component {
         super(props);
 
         // Bind event handlers so they are only bound once per instance.
+        this._onEnterPip = this._onEnterPip.bind(this);
         this._onToggleAudio = this._onToggleAudio.bind(this);
         this._onToggleVideo = this._onToggleVideo.bind(this);
     }
@@ -177,6 +179,18 @@ class Toolbox extends Component {
             iconStyle,
             style
         };
+    }
+
+    /**
+     * TODO.
+     *
+     * @private
+     */
+    _onEnterPip() {
+        console.log('PIP!');
+        enterPictureInPictureMode().catch(e => {
+            console.warn(`Error entering picture-in-picture mode: ${e}`);
+        });
     }
 
     /**
@@ -334,6 +348,12 @@ class Toolbox extends Component {
                             style = { style }
                             underlayColor = { underlayColor } />
                 }
+                <ToolbarButton
+                    iconName = { 'star' }
+                    iconStyle = { iconStyle }
+                    onClick = { this._onEnterPip }
+                    style = { style }
+                    underlayColor = { underlayColor } />
             </View>
         );
 

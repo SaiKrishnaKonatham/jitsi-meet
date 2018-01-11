@@ -17,12 +17,14 @@
 package org.jitsi.meet.sdk;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.net.URL;
 
@@ -39,9 +41,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
  * hooked to the React Native subsystem via proxy calls through the
  * {@code JKConferenceView} static methods.
  */
-public class JitsiMeetActivity
-    extends AppCompatActivity {
-
+public class JitsiMeetActivity extends AppCompatActivity {
     /**
      * The request code identifying requests for the permission to draw on top
      * of other apps. The value must be 16-bit and is arbitrarily chosen here.
@@ -205,19 +205,29 @@ public class JitsiMeetActivity
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        JitsiMeetView.onHostPause(this);
-        defaultBackButtonImpl = null;
-    }
-
-    @Override
     protected void onResume() {
+        Log.d("XXXX", "onResume");
         super.onResume();
 
         defaultBackButtonImpl = new DefaultHardwareBackBtnHandlerImpl(this);
         JitsiMeetView.onHostResume(this, defaultBackButtonImpl);
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(
+            boolean isInPictureInPictureMode, Configuration newConfig) {
+        Log.d("XXXX", "PiP mode changed!");
+
+        JitsiMeetView.onPictureInPictureModeChanged(isInPictureInPictureMode);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Log.d("XXXX", "onStop");
+        JitsiMeetView.onHostPause(this);
+        defaultBackButtonImpl = null;
     }
 
     /**

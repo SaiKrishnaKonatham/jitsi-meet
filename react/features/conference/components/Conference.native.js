@@ -205,21 +205,28 @@ class Conference extends Component<Props> {
                         </TintedView>
                 }
 
-                <View style = { styles.toolboxAndFilmstripContainer } >
-                    {/*
-                      * The Toolbox is in a stacking layer bellow the Filmstrip.
-                      */}
-                    <Toolbox />
-                    {/*
-                      * The Filmstrip is in a stacking layer above the
-                      * LargeVideo. The LargeVideo and the Filmstrip form what
-                      * the Web/React app calls "videospace". Presumably, the
-                      * name and grouping stem from the fact that these two
-                      * React Components depict the videos of the conference's
-                      * participants.
-                      */}
-                    <Filmstrip />
-                </View>
+                {/*
+                  * When in picture-in-picture mode, hide the filmstrip and
+                  * toolbox/toolbar.
+                  */
+                    !this.props._inPipMode &&
+                        <View style={styles.toolboxAndFilmstripContainer}>
+                            {/*
+                              * The Toolbox is in a stacking layer bellow the
+                              * Filmstrip.
+                              */}
+                            <Toolbox/>
+                            {/*
+                              * The Filmstrip is in a stacking layer above the
+                              * LargeVideo. The LargeVideo and the Filmstrip
+                              * form what the Web/React app calls "videospace".
+                              * Presumably, the name and grouping stem from the
+                              * fact that these two React Components depict the
+                              * videos of the conference's participants.
+                              */}
+                            <Filmstrip/>
+                        </View>
+                }
 
                 {/*
                   * The dialogs are in the topmost stacking layers.
@@ -391,6 +398,11 @@ function _mapStateToProps(state) {
          * @type {boolean}
          */
         _connecting: Boolean(connecting_),
+
+        /**
+         * TODO.
+         */
+        _inPipMode: state['features/pip'].inPipMode,
 
         /**
          * The indicator which determines whether the Toolbox is visible.

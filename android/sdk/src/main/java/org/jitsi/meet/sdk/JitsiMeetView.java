@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,10 +29,14 @@ import android.widget.FrameLayout;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -64,6 +69,7 @@ public class JitsiMeetView extends FrameLayout {
             new AppInfoModule(reactContext),
             new AudioModeModule(reactContext),
             new ExternalAPIModule(reactContext),
+            new PictureInPictureModule(reactContext),
             new ProximityModule(reactContext),
             new WiFiStatsModule(reactContext)
         );
@@ -234,6 +240,40 @@ public class JitsiMeetView extends FrameLayout {
 
         if (reactInstanceManager != null) {
             reactInstanceManager.onNewIntent(intent);
+        }
+    }
+
+    /**
+     * TODO.
+     *
+     * @param isInPictureInPictureMode
+     */
+    public static void onPictureInPictureModeChanged(
+            boolean isInPictureInPictureMode) {
+        if (reactInstanceManager != null) {
+            WritableMap params = Arguments.createMap();
+            params.putBoolean(
+                "isInPictureInPictureMode", isInPictureInPictureMode);
+            sendEvent("pictureInPictureModeChanged", params);
+        }
+    }
+
+    /**
+     * TODO.
+     *
+     * @param eventName
+     * @param params
+     */
+    private static void sendEvent(
+            String eventName, @Nullable WritableMap params) {
+        if (reactInstanceManager != null) {
+            ReactContext reactContext
+                = reactInstanceManager.getCurrentReactContext();
+            if (reactContext != null) {
+                reactContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit(eventName, params);
+            }
         }
     }
 
